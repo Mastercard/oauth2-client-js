@@ -1,0 +1,117 @@
+{
+  "name": "@mastercard/oauth2-client-js",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Access Mastercard APIs with OAuth 2.0 and FAPI 2.0",
+  "homepage": "https://github.com/Mastercard/oauth2-client-js",
+  "author": "Mastercard",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mastercard/oauth2-client-js.git"
+  },
+  "main": "dist/index.cjs",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.cjs"
+    },
+    "./axios": {
+      "types": "./dist/axios.d.ts",
+      "import": "./dist/axios.esm.js",
+      "require": "./dist/axios.cjs"
+    },
+    "./superagent": {
+      "types": "./dist/superagent.d.ts",
+      "import": "./dist/superagent.esm.js",
+      "require": "./dist/superagent.cjs"
+    },
+    "./dist/index.umd.min.js": "./dist/index.umd.min.js"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "test": "jest --testPathIgnorePatterns=/tests/integration/",
+    "test:watch": "jest --watch --testPathIgnorePatterns=/tests/integration/",
+    "test:coverage": "jest --coverage",
+    "test:integration": "jest --testMatch=\"**/tests/integration/**/*.test.(ts|tsx|js)\"",
+    "test:all": "npm run generate-clients && npm run build && jest",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.{ts,js}\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"tests/**/*.{ts,js}\"",
+    "typecheck": "tsc --noEmit -p tsconfig.build.json",
+    "generate-clients": "node tests/_scripts_/generate-all-clients.js",
+    "generate-clients:typescript-axios": "openapi-generator-cli generate -i tests/_resources_/petstore-api.yaml -g typescript-axios -o tests/generated-clients/typescript-axios",
+    "generate-clients:typescript-fetch": "openapi-generator-cli generate -i tests/_resources_/petstore-api.yaml -g typescript-fetch -o tests/generated-clients/typescript-fetch",
+    "generate-clients:javascript": "openapi-generator-cli generate -i tests/_resources_/petstore-api.yaml -g javascript --additional-properties usePromises=true -o tests/generated-clients/javascript"
+  },
+  "keywords": [
+    "oauth2",
+    "fapi2",
+    "dpop",
+    "jwt",
+    "authentication",
+    "security",
+    "typescript",
+    "zero-dependency",
+    "mastercard"
+  ],
+  "peerDependencies": {
+    "axios": "1.13.5",
+    "superagent": ">=5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "axios": {
+      "optional": true
+    },
+    "superagent": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@babel/core": "^7.28.5",
+    "@babel/preset-env": "^7.28.5",
+    "@eslint/js": "^9.39.1",
+    "@jest/globals": "^30.2.0",
+    "@openapitools/openapi-generator-cli": "^2.25.0",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-replace": "^6.0.3",
+    "@rollup/plugin-terser": "^1.0.0",
+    "@rollup/plugin-typescript": "^12.3.0",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.10.0",
+    "@types/node-forge": "^1.3.14",
+    "@types/superagent": "^8.1.9",
+    "@typescript-eslint/eslint-plugin": "^8.46.3",
+    "@typescript-eslint/parser": "^8.46.3",
+    "axios": "1.13.5",
+    "babel-jest": "^30.2.0",
+    "eslint": "^9.39.1",
+    "globals": "^16.5.0",
+    "jest": "^30.0.0",
+    "msw": "^2.12.7",
+    "node-forge": "1.3.2",
+    "prettier": "^3.6.2",
+    "rollup": "4.59.0",
+    "superagent": "^10.2.3",
+    "ts-jest": "^29.4.5",
+    "tslib": "^2.8.1",
+    "typescript": "^5.9.3",
+    "undici": "7.18.2"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  }
+}

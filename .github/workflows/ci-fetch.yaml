@@ -1,0 +1,27 @@
+name: fetch
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  integration-fetch:
+    strategy:
+      matrix:
+        node-version:
+          - 20.x
+          - 22.x
+          - 24.x
+    uses: ./.github/workflows/test-template.yaml
+    with:
+      node-version: ${{ matrix.node-version }}
+      axios-version: ''
+      superagent-version: ''
+      test-command: 'npx jest tests/integration/e2e -t "fetch"'
+      cache-generated-clients: false

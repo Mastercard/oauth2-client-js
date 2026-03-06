@@ -1,0 +1,29 @@
+name: openapi-fetch
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  integration-openapi-fetch:
+    strategy:
+      matrix:
+        node-version:
+          - 24.x
+        openapi-generator-version:
+          - 7.0.0
+          - 7.19.0
+    uses: ./.github/workflows/test-template.yaml
+    with:
+      node-version: ${{ matrix.node-version }}
+      openapi-generator-version: ${{ matrix.openapi-generator-version }}
+      axios-version: ''
+      superagent-version: ''
+      test-command: 'npx jest tests/integration/e2e -t "openapi-fetch"'
+      cache-generated-clients: false

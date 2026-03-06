@@ -1,0 +1,205 @@
+openapi: 3.0.3
+info:
+  version: ""
+  title: Pet Store API
+servers:
+  - url: https://api.mastercard.com/oauth-petstore/petstore
+  - url: https://sandbox.api.mastercard.com/oauth-petstore/petstore
+tags:
+  - name: Dogs
+  - name: Pets
+paths:
+  /dogs:
+    post:
+      tags:
+        - Dogs
+      operationId: addDog
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewDog'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dog'
+  '/dogs/{pet_id}':
+    get:
+      tags:
+        - Dogs
+      operationId: getDog
+      parameters:
+        - name: pet_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dog'
+  /pets:
+    get:
+      tags:
+        - Pets
+      operationId: searchPets
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PetList'
+  /pets/{pet_id}:
+    delete:
+      tags:
+        - Pets
+      summary: Delete information about a pet
+      description: Delete a `Pet` from the database.
+      operationId: deletePet
+      parameters:
+        - name: pet_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: ''
+components:
+  schemas:
+    PetList:
+      type: object
+      properties:
+        count:
+          $ref: '#/components/schemas/Count'
+        offset:
+          $ref: '#/components/schemas/Offset'
+        limit:
+          $ref: '#/components/schemas/Limit'
+        total:
+          $ref: '#/components/schemas/Total'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pet'
+    Birthdate:
+      type: object
+      required:
+        - year
+      properties:
+        year:
+          type: integer
+        month:
+          type: integer
+        day:
+          type: integer
+    Count:
+      type: integer
+    Offset:
+      type: integer
+    Limit:
+      type: integer
+    Total:
+      type: integer
+    DateAndTime:
+      type: string
+      format: date-time
+    ResourceIdentifier:
+      type: string
+      format: uuid
+    BaseResource:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/ResourceIdentifier'
+        created:
+          $ref: '#/components/schemas/DateAndTime'
+        updated:
+          $ref: '#/components/schemas/DateAndTime'
+    PetCategory:
+      type: string
+    PetStatus:
+      type: object
+      required:
+        - value
+      properties:
+        value:
+          $ref: '#/components/schemas/PetStatusValue'
+    PetStatusValue:
+      type: string
+    BasePet:
+      type: object
+      required:
+        - status
+        - gender
+        - breed
+        - color
+      properties:
+        status:
+          $ref: '#/components/schemas/PetStatus'
+        name:
+          type: string
+        breed:
+          type: string
+        color:
+          type: string
+        gender:
+          type: string
+        birthdate:
+          $ref: '#/components/schemas/Birthdate'
+    Pet:
+      type: object
+      required:
+        - category
+        - id
+        - status
+        - gender
+        - breed
+        - color
+      allOf:
+        - $ref: '#/components/schemas/BaseResource'
+        - $ref: '#/components/schemas/BasePet'
+        - $ref: '#/components/schemas/PetProperties'
+    PetProperties:
+      type: object
+      properties:
+        category:
+          $ref: '#/components/schemas/PetCategory'
+    NewDog:
+      required:
+        - dogProperty2
+      allOf:
+        - $ref: '#/components/schemas/BasePet'
+        - $ref: '#/components/schemas/NewDogProperties'
+    NewDogProperties:
+      type: object
+      properties:
+        dogProperty1:
+          type: object
+          additionalProperties: true
+        dogProperty2:
+          type: object
+          additionalProperties: true
+    Dog:
+      required:
+        - dogProperty3
+      allOf:
+        - $ref: '#/components/schemas/BaseResource'
+        - $ref: '#/components/schemas/NewDog'
+        - $ref: '#/components/schemas/DogProperties'
+    DogProperties:
+      type: object
+      properties:
+        dogProperty3:
+          type: object
+          additionalProperties: true

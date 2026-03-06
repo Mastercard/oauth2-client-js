@@ -1,0 +1,35 @@
+name: openapi-superagent
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  integration-openapi-superagent:
+    strategy:
+      matrix:
+        node-version:
+          - 24.x
+        openapi-generator-version:
+          - 7.0.0
+          - 7.19.0
+        superagent-version:
+          - 8.1.0
+          - 9.0.0
+          - 10.0.0
+          - 10.1.0
+          - 10.2.0
+    uses: ./.github/workflows/test-template.yaml
+    with:
+      node-version: ${{ matrix.node-version }}
+      openapi-generator-version: ${{ matrix.openapi-generator-version }}
+      axios-version: ''
+      superagent-version: ${{ matrix.superagent-version }}
+      test-command: 'npx jest tests/integration/e2e -t "openapi-superagent"'
+      cache-generated-clients: false

@@ -1,0 +1,31 @@
+name: axios
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  integration-axios:
+    strategy:
+      matrix:
+        node-version:
+          - 24.x
+        axios-version:
+          - 1.9.0
+          - 1.10.0
+          - 1.11.0
+          - 1.12.0
+          - 1.13.0
+    uses: ./.github/workflows/test-template.yaml
+    with:
+      node-version: ${{ matrix.node-version }}
+      axios-version: ${{ matrix.axios-version }}
+      superagent-version: ''
+      test-command: 'npx jest tests/integration/e2e -t "axios"'
+      cache-generated-clients: false

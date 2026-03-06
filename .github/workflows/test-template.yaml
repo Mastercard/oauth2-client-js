@@ -1,0 +1,101 @@
+name: Test Template
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        required: true
+        type: string
+      openapi-generator-version:
+        required: false
+        type: string
+        default: ''
+      axios-version:
+        required: false
+        type: string
+        default: ''
+      superagent-version:
+        required: false
+        type: string
+        default: ''
+      test-command:
+        required: true
+        type: string
+        description: 'Test command to run'
+      cache-generated-clients:
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 'Use Node.js ${{ inputs.node-version }}'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '${{ inputs.node-version }}'
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ inputs.node-version }}-axios-${{ inputs.axios-version }}-superagent-${{ inputs.superagent-version }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ inputs.node-version }}-modules-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install specific peer dependency versions
+        if: ${{ inputs.axios-version != '' || inputs.superagent-version != '' }}
+        run: |
+          AXIOS_VERSION="${{ inputs.axios-version }}"
+          SUPERAGENT_VERSION="${{ inputs.superagent-version }}"
+
+          if [ -n "$AXIOS_VERSION" ] && [ -n "$SUPERAGENT_VERSION" ]; then
+            echo "Installing axios@$AXIOS_VERSION and superagent@$SUPERAGENT_VERSION"
+            npm install --no-save axios@$AXIOS_VERSION superagent@$SUPERAGENT_VERSION
+          elif [ -n "$AXIOS_VERSION" ]; then
+            echo "Installing axios@$AXIOS_VERSION"
+            npm install --no-save axios@$AXIOS_VERSION
+          elif [ -n "$SUPERAGENT_VERSION" ]; then
+            echo "Installing superagent@$SUPERAGENT_VERSION"
+            npm install --no-save superagent@$SUPERAGENT_VERSION
+          fi
+
+      - name: Set OpenAPI Generator version
+        if: ${{ inputs.openapi-generator-version != '' }}
+        run: |
+          echo "Setting OpenAPI Generator version to ${{ inputs.openapi-generator-version }}"
+          node -e "const fs = require('fs'); const config = JSON.parse(fs.readFileSync('openapitools.json', 'utf8')); config['generator-cli'].version = '${{ inputs.openapi-generator-version }}'; fs.writeFileSync('openapitools.json', JSON.stringify(config, null, 2) + '\n');"
+          cat openapitools.json
+
+      - name: Cache generated clients
+        if: ${{ inputs.cache-generated-clients }}
+        id: cache-generated-clients
+        uses: actions/cache@v4
+        with:
+          path: tests/generated-clients
+          key: ${{ runner.os }}-generated-clients-${{ hashFiles('tests/_resources_/petstore-api.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-generated-clients-
+
+      - name: Ensure native Rollup binary
+        run: |
+          PKG_GNU="@rollup/rollup-$(node -p "process.platform")-$(node -p "process.arch")-gnu"
+          PKG_MUSL="@rollup/rollup-$(node -p "process.platform")-$(node -p "process.arch")-musl"
+          echo "Install native rollup binary: $PKG_GNU (fallback: $PKG_MUSL)"
+          npm i "$PKG_GNU" --no-save || npm i "$PKG_MUSL" --no-save || true
+
+      - name: Generate clients
+        if: ${{ !inputs.cache-generated-clients || steps.cache-generated-clients.outputs.cache-hit != 'true' }}
+        run: npm run generate-clients
+
+      - name: Build project
+        run: npm run build
+
+      - name: Run tests
+        run: ${{ inputs.test-command }}

@@ -1,0 +1,25 @@
+name: Node.js
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  unit-tests:
+    strategy:
+      matrix:
+        node-version:
+          - 20.x
+          - 22.x
+          - 24.x
+    uses: ./.github/workflows/test-template.yaml
+    with:
+      node-version: ${{ matrix.node-version }}
+      test-command: 'npm test'
+      cache-generated-clients: true

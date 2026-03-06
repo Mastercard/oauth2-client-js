@@ -1,0 +1,31 @@
+name: superagent
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  integration-superagent:
+    strategy:
+      matrix:
+        node-version:
+          - 24.x
+        superagent-version:
+          - 8.1.0
+          - 9.0.0
+          - 10.0.0
+          - 10.1.0
+          - 10.2.0
+    uses: ./.github/workflows/test-template.yaml
+    with:
+      node-version: ${{ matrix.node-version }}
+      axios-version: ''
+      superagent-version: ${{ matrix.superagent-version }}
+      test-command: 'npx jest tests/integration/e2e -t "superagent"'
+      cache-generated-clients: false

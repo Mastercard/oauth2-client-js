@@ -1,0 +1,48 @@
+{
+  "extends": "../tsconfig.build.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "sourceMap": true,
+    "rootDir": "..",
+    "types": [
+      "@jest/globals",
+      "node"
+    ],
+    "exactOptionalPropertyTypes": false,
+    "strict": false,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "strictFunctionTypes": false,
+    "strictBindCallApply": false,
+    "strictPropertyInitialization": false,
+    "noImplicitThis": false,
+    "noImplicitReturns": false,
+    "noFallthroughCasesInSwitch": false,
+    "noUncheckedIndexedAccess": false,
+    "noImplicitOverride": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "skipLibCheck": true,
+    "baseUrl": "..",
+    "paths": {
+      "#types": ["./src/types.ts"],
+      "#core/*": ["./src/core/*"],
+      "#crypto/*": ["./src/crypto/*"],
+      "#http/*": ["./src/http/*"],
+      "#security/*": ["./src/security/*"],
+      "#utils/*": ["./src/utils/*"],
+      "#tokens/*": ["./src/tokens/*"],
+      "#scope/*": ["./src/scope/*"],
+      "#mock-server/*": ["tests/integration/e2e/_mock_server_/*"],
+      "#test-utils/*": ["tests/_utils_/*"]
+    }
+  },
+  "include": [
+    "../src/**/*",
+    "./**/*"
+  ],
+  "exclude": [
+    "../node_modules",
+    "../dist"
+  ]
+}
