@@ -137,11 +137,10 @@ const response = await oauth2Fetch('/pets', { method: 'GET' });
 import { withOAuth2Axios } from '@mastercard/oauth2-client-js/axios';
 import axios from 'axios';
 
-const axiosInstance = axios.create({
-  baseURL: 'https://api.mastercard.com/service'
-});
+const baseURL = 'https://api.mastercard.com/service';
 
-const oauth2Axios = withOAuth2Axios(oauth2Client, axiosInstance);
+const axiosInstance = axios.create({ baseURL });
+const oauth2Axios = withOAuth2Axios(oauth2Client, axiosInstance, { baseURL });
 
 // Make authenticated requests
 const { data } = await oauth2Axios.get('/pets');
